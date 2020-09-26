@@ -103,21 +103,21 @@
 
             <Button
 
-                android:id="@+id/leftBracket"
+                android:id="@+id/openBracket"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="(" />
 
             <Button
-                android:id="@+id/rightBracket"
+                android:id="@+id/closeBracket"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text=")" />
 
             <Button
-                android:id="@+id/Delete"
+                android:id="@+id/delete"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

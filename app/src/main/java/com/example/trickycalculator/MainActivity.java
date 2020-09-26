@@ -9,16 +9,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity {
 
     //the field, which will be accumulate all input information
     ArrayList<Character> field = new ArrayList<>();
-    private String str = "";
-    // String field = "";
+
+
+    private String str;
+
     TextView theFirstLine;
-    Button one, two, three, four, five, six, seven, eight, nine, zero, plus, minus, equally, split, multiply, point, rightBracket, leftBreaket;
+    Button one, two, three, four, five, six, seven, eight, nine, zero, plus, minus, equally, split, multiply, point, closeBracket, openBracket, delete;
+
 
     public void attachButtonsAndField() {
         one = findViewById(R.id.oneButton);
@@ -37,10 +40,36 @@ public class MainActivity extends AppCompatActivity {
         split = findViewById(R.id.splitButton);
         multiply = findViewById(R.id.multiplyButton);
         point = findViewById(R.id.point);
-        leftBreaket = findViewById(R.id.leftBracket);
-        rightBracket = findViewById(R.id.rightBracket);
+        openBracket = findViewById(R.id.openBracket);
+        closeBracket = findViewById(R.id.closeBracket);
+        delete = findViewById(R.id.delete);
+        //field.add(' ');
 
+    }
 
+    //work with dublication
+    private boolean repeatSigns() {
+
+        return (field.get(field.size() - 1) == '-' ||
+                field.get(field.size() - 1) == '+' ||
+                field.get(field.size() - 1) == '/' ||
+                field.get(field.size() - 1) == '*' ||
+                field.get(field.size() - 1) == '.');
+       /* } else {
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "You can't add more then one arithmetic symbols together",
+                    Toast.LENGTH_SHORT);
+            toast.show();
+            return false;
+        }
+
+        */
+
+    }
+
+    private boolean findBrackets() {
+        return (field.get(field.size() - 1) == ')' ||
+                field.get(field.size() - 1) == '(');
     }
 
     @Override
@@ -54,9 +83,11 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 //getId shows which button was pushed
                 switch (view.getId()) {
                     case R.id.oneButton:
+
                         field.add('1');
 
                         break;
@@ -92,48 +123,109 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.zeroButton:
                         field.add('0');
                         break;
-                    case R.id.plusButton:
-                        // if (field.length()-1
-                        field.add('+');
+                    case R.id.delete:
+                        if (!field.isEmpty())
+                            field.remove(field.size() - 1);
+                        else {
+                            Toast toast = Toast.makeText(getApplicationContext(),
+                                    "the field is already empty",
+                                    Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
                         break;
-                    case R.id.minusButton:
-                        if (field.get(field.size() - 1) == '-' ||
-                                field.get(field.size() - 1) == '+' ||
-                                field.get(field.size() - 1) == '/' ||
-                                field.get(field.size() - 1) == '*') {
+                    case R.id.plusButton:
+
+                        //if the field empty of there is no repeat signs
+                        if (field.isEmpty() || !repeatSigns()) {
+                            field.add('+');
+                        } else {
                             Toast toast = Toast.makeText(getApplicationContext(),
                                     "You can't add more then one arithmetic symbols together",
                                     Toast.LENGTH_SHORT);
                             toast.show();
-                            field.remove(field.size() - 1);
-                            break;
 
+                        }
+                        break;
 
-
-                        } else {
-
-
+                    case R.id.minusButton:
+                        if (field.isEmpty() || !repeatSigns()) {
                             field.add('-');
-                            break;
+                        } else {
+                            Toast toast = Toast.makeText(getApplicationContext(),
+                                    "You can't add more then one arithmetic symbols together",
+                                    Toast.LENGTH_SHORT);
+                            toast.show();
+
                         }
 
-
-
+                        break;
                     case R.id.doneMagickHoldButton:
                         //do some magic
                         break;
                     case R.id.splitButton:
-                        field.add('/');
+                        if (repeatSigns()) {
+                            Toast toast = Toast.makeText(getApplicationContext(),
+                                    "You can't add more then one arithmetic symbols together",
+                                    Toast.LENGTH_SHORT);
+                            toast.show();
+
+                        } else
+                            field.add('/');
                         break;
                     case R.id.multiplyButton:
-                        field.add('*');
+                        if (repeatSigns()) {
+                            Toast toast = Toast.makeText(getApplicationContext(),
+                                    "You can't add more then one arithmetic symbols together",
+                                    Toast.LENGTH_SHORT);
+                            toast.show();
+
+                        } else
+                            field.add('*');
                         break;
+                    case R.id.point:
+                        if (repeatSigns()) {
+                            Toast toast = Toast.makeText(getApplicationContext(),
+                                    "You can't add more then one arithmetic symbols together",
+                                    Toast.LENGTH_SHORT);
+                            toast.show();
+
+                        } else
+                            field.add('.');
+                        break;
+                    case R.id.openBracket:
+                        if (!repeatSigns()) {
+                            Toast toast = Toast.makeText(getApplicationContext(),
+                                    "You can't add the bracket without any arithmetic symbols",
+                                    Toast.LENGTH_SHORT);
+                            toast.show();
+                        } else
+
+                            field.add('(');
+                        break;
+                    case R.id.closeBracket:
+                        if (!repeatSigns()) {
+                            Toast toast = Toast.makeText(getApplicationContext(),
+                                    "You can't add the bracket without any arithmetic symbols",
+                                    Toast.LENGTH_SHORT);
+                            toast.show();
+                        } else
+                            field.add(')');
+                        break;
+
 
                 }
 
-                str += field.get(field.size() - 1);
+
+                str = "";
+                for (char c : field) {
+                    str += c;
+                }
+
+
                 theFirstLine.setText(str);
             }
+
+
         };
         one.setOnClickListener(onClickListener);
         two.setOnClickListener(onClickListener);
@@ -149,6 +241,10 @@ public class MainActivity extends AppCompatActivity {
         minus.setOnClickListener(onClickListener);
         split.setOnClickListener(onClickListener);
         multiply.setOnClickListener(onClickListener);
+        point.setOnClickListener(onClickListener);
+        delete.setOnClickListener(onClickListener);
+        openBracket.setOnClickListener(onClickListener);
+        closeBracket.setOnClickListener(onClickListener);
 
 
     }
