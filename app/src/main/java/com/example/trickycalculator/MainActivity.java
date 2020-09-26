@@ -55,15 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 field.get(field.size() - 1) == '/' ||
                 field.get(field.size() - 1) == '*' ||
                 field.get(field.size() - 1) == '.');
-       /* } else {
-            Toast toast = Toast.makeText(getApplicationContext(),
-                    "You can't add more then one arithmetic symbols together",
-                    Toast.LENGTH_SHORT);
-            toast.show();
-            return false;
-        }
 
-        */
 
     }
 
@@ -78,6 +70,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         theFirstLine = findViewById(R.id.workingTextView);
         attachButtonsAndField();
+
+        final Toast toast = Toast.makeText(getApplicationContext(),
+                "something went wrong",
+                Toast.LENGTH_SHORT);
+
 
         //listener
         View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -127,22 +124,17 @@ public class MainActivity extends AppCompatActivity {
                         if (!field.isEmpty())
                             field.remove(field.size() - 1);
                         else {
-                            Toast toast = Toast.makeText(getApplicationContext(),
-                                    "the field is already empty",
-                                    Toast.LENGTH_SHORT);
-                            toast.show();
+
                         }
                         break;
                     case R.id.plusButton:
 
                         //if the field empty of there is no repeat signs
-                        if (field.isEmpty() || !repeatSigns()) {
-                            field.add('+');
-                        } else {
-                            Toast toast = Toast.makeText(getApplicationContext(),
-                                    "You can't add more then one arithmetic symbols together",
-                                    Toast.LENGTH_SHORT);
+                        if (field.isEmpty() || repeatSigns()) {
                             toast.show();
+                        } else {
+                            field.add('+');
+
 
                         }
                         break;
@@ -151,9 +143,7 @@ public class MainActivity extends AppCompatActivity {
                         if (field.isEmpty() || !repeatSigns()) {
                             field.add('-');
                         } else {
-                            Toast toast = Toast.makeText(getApplicationContext(),
-                                    "You can't add more then one arithmetic symbols together",
-                                    Toast.LENGTH_SHORT);
+
                             toast.show();
 
                         }
@@ -163,50 +153,40 @@ public class MainActivity extends AppCompatActivity {
                         //do some magic
                         break;
                     case R.id.splitButton:
-                        if (repeatSigns()) {
-                            Toast toast = Toast.makeText(getApplicationContext(),
-                                    "You can't add more then one arithmetic symbols together",
-                                    Toast.LENGTH_SHORT);
+                        if (field.isEmpty() || repeatSigns()) {
+
                             toast.show();
 
                         } else
                             field.add('/');
                         break;
                     case R.id.multiplyButton:
-                        if (repeatSigns()) {
-                            Toast toast = Toast.makeText(getApplicationContext(),
-                                    "You can't add more then one arithmetic symbols together",
-                                    Toast.LENGTH_SHORT);
+                        if (field.isEmpty() || repeatSigns()) {
+
                             toast.show();
 
                         } else
                             field.add('*');
                         break;
                     case R.id.point:
-                        if (repeatSigns()) {
-                            Toast toast = Toast.makeText(getApplicationContext(),
-                                    "You can't add more then one arithmetic symbols together",
-                                    Toast.LENGTH_SHORT);
+                        if (field.isEmpty() || repeatSigns()) {
+
                             toast.show();
 
                         } else
                             field.add('.');
                         break;
                     case R.id.openBracket:
-                        if (!repeatSigns()) {
-                            Toast toast = Toast.makeText(getApplicationContext(),
-                                    "You can't add the bracket without any arithmetic symbols",
-                                    Toast.LENGTH_SHORT);
-                            toast.show();
-                        } else
-
+                        if (field.isEmpty()||repeatSigns()) {
                             field.add('(');
+
+                        } else
+                            toast.show();
+
                         break;
                     case R.id.closeBracket:
-                        if (!repeatSigns()) {
-                            Toast toast = Toast.makeText(getApplicationContext(),
-                                    "You can't add the bracket without any arithmetic symbols",
-                                    Toast.LENGTH_SHORT);
+                        if (field.isEmpty()||repeatSigns()||!field.contains('(')||field.get(field.size()-1)=='(') {
+
                             toast.show();
                         } else
                             field.add(')');
