@@ -6,11 +6,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     //the field, which will be accumulate all input information
-    String field = "";
+    ArrayList<Character> field = new ArrayList<>();
+    private String str = "";
+    // String field = "";
     TextView theFirstLine;
     Button one, two, three, four, five, six, seven, eight, nine, zero, plus, minus, equally, split, multiply, point, rightBracket, leftBreaket;
 
@@ -51,59 +57,82 @@ public class MainActivity extends AppCompatActivity {
                 //getId shows which button was pushed
                 switch (view.getId()) {
                     case R.id.oneButton:
-                        field += String.valueOf(1);
+                        field.add('1');
 
                         break;
 
                     case R.id.twoButton:
-                        field += String.valueOf(2);
+                        field.add('2');
 
                         break;
                     case R.id.threeButton:
-                        field += String.valueOf(3);
+                        field.add('3');
 
                         break;
                     case R.id.fourButton:
-                        field += String.valueOf(4);
+                        field.add('4');
 
                         break;
                     case R.id.fiveButton:
-                        field += String.valueOf(5);
+                        field.add('5');
 
                         break;
                     case R.id.sixButton:
-                        field += String.valueOf(6);
+                        field.add('6');
                         break;
                     case R.id.sevenButton:
-                        field += String.valueOf(7);
+                        field.add('7');
                         break;
                     case R.id.eightButton:
-                        field += String.valueOf(8);
+                        field.add('8');
                         break;
                     case R.id.nineButton:
-                        field += String.valueOf(9);
+                        field.add('9');
                         break;
                     case R.id.zeroButton:
-                        field += String.valueOf(0);
+                        field.add('0');
                         break;
                     case R.id.plusButton:
-                        field += "+";
+                        // if (field.length()-1
+                        field.add('+');
                         break;
                     case R.id.minusButton:
-                        field += "-";
-                        break;
+                        if (field.get(field.size() - 1) == '-' ||
+                                field.get(field.size() - 1) == '+' ||
+                                field.get(field.size() - 1) == '/' ||
+                                field.get(field.size() - 1) == '*') {
+                            Toast toast = Toast.makeText(getApplicationContext(),
+                                    "You can't add more then one arithmetic symbols together",
+                                    Toast.LENGTH_SHORT);
+                            toast.show();
+                            field.remove(field.size() - 1);
+                            break;
+
+
+
+                        } else {
+
+
+                            field.add('-');
+                            break;
+                        }
+
+
+
                     case R.id.doneMagickHoldButton:
-                        //do some magix
+                        //do some magic
+                        break;
                     case R.id.splitButton:
-                        field += "/";
+                        field.add('/');
                         break;
                     case R.id.multiplyButton:
-                        field += "×";
+                        field.add('*');
                         break;
 
                 }
 
-                theFirstLine.setText(field);
+                str += field.get(field.size() - 1);
+                theFirstLine.setText(str);
             }
         };
         one.setOnClickListener(onClickListener);
