@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 
@@ -87,10 +88,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //каждое число в отдельную ячейку
-    public void separation() {
+    private void separation() {
 
-        //countLeftBrackets = 0;
-        // countRightBrackets = 0;
+
         String number = "";
 
         for (int i = 0; i < field.size(); i++) {
@@ -108,6 +108,102 @@ public class MainActivity extends AppCompatActivity {
         if (!number.equals("")) {
             operations.add(number);
         }
+
+    }
+
+    private String calculate() {
+        if (operations.isEmpty()) {
+            return "0";
+        }
+        countLeftBrackets = 0;
+        countRightBrackets = 0;
+        int leftBracketPosition = -1;
+        int rightBracketPosition = -1;
+        while (operations.size() > 1) {
+
+            for (int i = 0; i < operations.size(); i++) {
+                if (operations.get(i) == "(") {
+
+                    if (operations.get(i + 1) == "-") {
+                        operations.set(i + 1, "0");
+                    }
+                    leftBracketPosition = i;
+                }
+                //stop when we have found the first closing bracket
+                if (operations.get(i) == ")") {
+                    rightBracketPosition = i;
+
+                    break;
+                }
+            }
+            //create sub array without brackets
+            private void subcalc () {
+                ArrayList<String> subOperations = new ArrayList<>(operations.subList(leftBracketPosition, rightBracketPosition));
+                for (int j = 1; j < subOperations.size(); j += 2) {
+                    if (subOperations.get(j) == "*") {
+                        BigDecimal a = new BigDecimal(subOperations.get(j - 1));
+                        BigDecimal b = new BigDecimal(subOperations.get(j + 1));
+                        BigDecimal c = a.multiply(b);
+                        //delete symbols, which have been deleted below
+                        subOperations.remove(j - 1);
+                        subOperations.remove(j - 1);
+                        subOperations.set(j - 1, c.toString());
+                        j -= 2;
+                    }
+                    if (subOperations.get(j) == "*") {
+                        BigDecimal a = new BigDecimal(subOperations.get(j - 1));
+                        BigDecimal b = new BigDecimal(subOperations.get(j + 1));
+
+                        if (b.doubleValue() == 0) {
+                            Toast.makeText(getApplicationContext(),
+                                    "you can't divide on zero",
+                                    Toast.LENGTH_SHORT).show();
+
+                        }
+                        BigDecimal c = a.divide(b);
+
+                        subOperations.remove(j - 1);
+                        subOperations.remove(j - 1);
+                        subOperations.set(j - 1, c.toString());
+                        j -= 2;
+                    }
+                    if (subOperations.get(j) == "+") {
+                        BigDecimal a = new BigDecimal(subOperations.get(j - 1));
+                        BigDecimal b = new BigDecimal(subOperations.get(j + 1));
+
+
+                        BigDecimal c = a.add(b);
+
+                        subOperations.remove(j - 1);
+                        subOperations.remove(j - 1);
+                        subOperations.set(j - 1, c.toString());
+                        j -= 2;
+                    }
+                    if (subOperations.get(j) == "-") {
+                        BigDecimal a = new BigDecimal(subOperations.get(j - 1));
+                        BigDecimal b = new BigDecimal(subOperations.get(j + 1));
+
+
+                        BigDecimal c = a.subtract(b);
+
+                        subOperations.remove(j - 1);
+                        subOperations.remove(j - 1);
+                        subOperations.set(j - 1, c.toString());
+                        j -= 2;
+                    }
+
+                }
+                //delete stuff between brackets
+                for (int k = leftBracketPosition; k <= rightBracketPosition; k++) {
+                    operations.remove(k);
+                }
+                //put finish value to common collection
+                operations.set(leftBracketPosition, subOperations.get(0));
+            }
+        }
+
+
+        return operations.get(0);
 
     }
 
@@ -247,12 +343,9 @@ public class MainActivity extends AppCompatActivity {
                             toast.show();
                         } else
                             separation();
-                        result.setText(operations.toString());
+                        result.setText(calculate());
 
-
-                        //do some magic
                         break;
-
 
                 }
 
@@ -265,7 +358,6 @@ public class MainActivity extends AppCompatActivity {
 
                 theFirstLine.setText(str);
             }
-
 
         };
         one.setOnClickListener(onClickListener);
@@ -289,5 +381,7 @@ public class MainActivity extends AppCompatActivity {
         cancel.setOnClickListener(onClickListener);
         equally.setOnClickListener(onClickListener);
 
+
     }
 }
+
