@@ -14,14 +14,16 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     //the field, which will be accumulate all input information
-    ArrayList<Character> field = new ArrayList<>();
+    private ArrayList<Character> field = new ArrayList<>();
+    //collection for work with numbers
+    private ArrayList<String> operations = new ArrayList<>();
 
 
     private String str;
 
-    TextView theFirstLine;
-    Button one, two, three, four, five, six, seven, eight, nine, zero, plus, minus, equally, split, multiply, point, closeBracket, openBracket, delete;
-
+    TextView theFirstLine, result;
+    Button one, two, three, four, five, six, seven, eight, nine, zero, plus, minus, equally, split, multiply, point, closeBracket, openBracket, delete, cancel;
+    int countLeftBrackets, countRightBrackets;
 
     public void attachButtonsAndField() {
         one = findViewById(R.id.oneButton);
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         openBracket = findViewById(R.id.openBracket);
         closeBracket = findViewById(R.id.closeBracket);
         delete = findViewById(R.id.delete);
+        cancel = findViewById(R.id.cancel);
         //field.add(' ');
 
     }
@@ -64,11 +67,57 @@ public class MainActivity extends AppCompatActivity {
                 field.get(field.size() - 1) == '(');
     }
 
+    private boolean bracketsCounter(String a) {
+        int open = 0;
+        int close = 0;
+        for (int i = 0; i < a.length(); ++i) {
+
+            if (a.charAt(i) == '(') {
+                open++;
+            } else if (a.charAt(i) == ')') {
+                close++;
+            }
+
+        }
+        if (open != close) {
+
+            return false;
+        } else return true;
+
+    }
+
+    //каждое число в отдельную ячейку
+    public void separation() {
+
+        //countLeftBrackets = 0;
+        // countRightBrackets = 0;
+        String number = "";
+
+        for (int i = 0; i < field.size(); i++) {
+
+            char symbol = field.get(i);
+            if (symbol != '+' && symbol != '-' && symbol != '*' && symbol != '/' && symbol != '(' && symbol != ')') {
+                number += field.get(i);
+            } else {
+                operations.add(number);
+                number = "";
+                operations.add(symbol + "");
+            }
+
+        }
+        if (!number.equals("")) {
+            operations.add(number);
+        }
+
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         theFirstLine = findViewById(R.id.workingTextView);
+        result = findViewById(R.id.resultTextView);
         attachButtonsAndField();
 
         final Toast toast = Toast.makeText(getApplicationContext(),
@@ -149,9 +198,7 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         break;
-                    case R.id.doneMagickHoldButton:
-                        //do some magic
-                        break;
+
                     case R.id.splitButton:
                         if (field.isEmpty() || repeatSigns()) {
 
@@ -169,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                             field.add('*');
                         break;
                     case R.id.point:
-                        if (field.isEmpty() || repeatSigns()) {
+                        if (field.isEmpty() || repeatSigns() || findBrackets()) {
 
                             toast.show();
 
@@ -177,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
                             field.add('.');
                         break;
                     case R.id.openBracket:
-                        if (field.isEmpty()||repeatSigns()) {
+                        if (field.isEmpty() || repeatSigns()) {
                             field.add('(');
 
                         } else
@@ -185,11 +232,25 @@ public class MainActivity extends AppCompatActivity {
 
                         break;
                     case R.id.closeBracket:
-                        if (field.isEmpty()||repeatSigns()||!field.contains('(')||field.get(field.size()-1)=='(') {
+                        if (field.isEmpty() || repeatSigns() || !field.contains('(') || field.get(field.size() - 1) == '(') {
 
                             toast.show();
                         } else
                             field.add(')');
+                        break;
+                    case R.id.cancel:
+                        field.clear();
+
+                    case R.id.doneMagickHoldButton:
+
+                        if (!bracketsCounter(str)) {
+                            toast.show();
+                        } else
+                            separation();
+                        result.setText(operations.toString());
+
+
+                        //do some magic
                         break;
 
 
@@ -225,7 +286,8 @@ public class MainActivity extends AppCompatActivity {
         delete.setOnClickListener(onClickListener);
         openBracket.setOnClickListener(onClickListener);
         closeBracket.setOnClickListener(onClickListener);
-
+        cancel.setOnClickListener(onClickListener);
+        equally.setOnClickListener(onClickListener);
 
     }
 }
