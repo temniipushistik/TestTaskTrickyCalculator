@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     Button one, two, three, four, five, six, seven, eight, nine, zero, plus, minus, equally, split, multiply, point, closeBracket, openBracket, delete, cancel;
     int countLeftBrackets, countRightBrackets;
 
-    public void attachButtonsAndField() {
+    private void attachButtonsAndField() {
         one = findViewById(R.id.oneButton);
         two = findViewById(R.id.twoButton);
         three = findViewById(R.id.threeButton);
@@ -52,7 +52,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //work with dublication
+
+    //work with dublication and last symbol
     private boolean repeatSigns() {
 
         return (field.get(field.size() - 1) == '-' ||
@@ -356,6 +357,9 @@ public class MainActivity extends AppCompatActivity {
 
                         if (!bracketsCounter(str)) {
                             toast.show();
+                        } else if (repeatSigns()) {
+                            toast.show();
+
                         } else
                             separation();
                         result.setText(calculate());
