@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 if (operations.get(i).equals("(")) {
 
                     if (operations.get(i + 1).equals("-")) {
-                        operations.set(i + 1, "0");
+                        operations.add(i + 1, "0");
                     }
                     leftBracketPosition = i;
                 }
@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                     BigDecimal b = new BigDecimal(subOperations.get(j + 1));
                     BigDecimal c = a.multiply(b);
                     //correct to sailing math round if too much zero in the end
-                    c.setScale(25,RoundingMode.HALF_UP).stripTrailingZeros();
+                    c.setScale(25, RoundingMode.HALF_UP).stripTrailingZeros();
                     //delete symbols, which have been deleted below
                     subOperations.remove(j - 1);
                     subOperations.remove(j - 1);
@@ -162,15 +162,17 @@ public class MainActivity extends AppCompatActivity {
                     //delete all zero in the end
                     BigDecimal b = new BigDecimal(subOperations.get(j + 1)).stripTrailingZeros();
 
-                    //check divide by zero
-                    if (b.equals(new BigDecimal("0"))) {
+                    //crazy check divide by zero
+                    if (b.compareTo(BigDecimal.ZERO) == 0) {
                         Toast.makeText(getApplicationContext(),
                                 "you can't divide on zero",
                                 Toast.LENGTH_SHORT).show();
+                        return "error";
 
                     }
                     //round the value to sailing, killing zero in the end
-                    BigDecimal c = a.divide(b,50, RoundingMode.HALF_UP).stripTrailingZeros();;
+                    BigDecimal c = a.divide(b, 50, RoundingMode.HALF_UP).stripTrailingZeros();
+                    ;
 
                     subOperations.remove(j - 1);
                     subOperations.remove(j - 1);
@@ -225,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
         theFirstLine = findViewById(R.id.workingTextView);
         result = findViewById(R.id.resultTextView);
         attachButtonsAndField();
+        getSupportActionBar().hide();
 
         final Toast toast = Toast.makeText(getApplicationContext(),
                 "something went wrong",
@@ -346,6 +349,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.cancel:
                         field.clear();
+                        result.setText("");
                         break;
 
                     case R.id.doneMagickHoldButton:
