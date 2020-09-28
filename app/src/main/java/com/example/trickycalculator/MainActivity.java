@@ -1,8 +1,27 @@
+/*
+ * Copyright (C) 2020 Gennadii Koshelev
+ *
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at KoshelevGennadii1989@gmail.com
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.example.trickycalculator;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -19,11 +38,12 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Character> field = new ArrayList<>();
     //collection for work with numbers
     private ArrayList<String> operations = new ArrayList<>();
+    private boolean codeTimerStarts = false;
 
 
     private String str;
 
-    TextView theFirstLine, result;
+    TextView firstLine, result;
     Button one, two, three, four, five, six, seven, eight, nine, zero, plus, minus, equally, split, multiply, point, closeBracket, openBracket, delete, cancel;
     int countLeftBrackets, countRightBrackets;
 
@@ -54,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     //work with dublication and last symbol
-    private boolean repeatSigns() {
+    private boolean repeatSignsAndLastSymbol() {
 
         return (field.get(field.size() - 1) == '-' ||
                 field.get(field.size() - 1) == '+' ||
@@ -225,10 +245,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        theFirstLine = findViewById(R.id.workingTextView);
+        firstLine = findViewById(R.id.workingTextView);
         result = findViewById(R.id.resultTextView);
         attachButtonsAndField();
         getSupportActionBar().hide();
+
+        final Handler btnStartHandler = new Handler();
+        final Handler waitingHandler = new Handler();
+
 
         final Toast toast = Toast.makeText(getApplicationContext(),
                 "something went wrong",
@@ -289,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.plusButton:
 
                         //if the field empty of there is no repeat signs
-                        if (field.isEmpty() || repeatSigns()) {
+                        if (field.isEmpty() || repeatSignsAndLastSymbol()) {
                             toast.show();
                         } else {
                             field.add('+');
@@ -299,7 +323,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case R.id.minusButton:
-                        if (field.isEmpty() || !repeatSigns()) {
+                        if (field.isEmpty() || !repeatSignsAndLastSymbol()) {
                             field.add('-');
                         } else {
 
@@ -310,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case R.id.splitButton:
-                        if (field.isEmpty() || repeatSigns()) {
+                        if (field.isEmpty() || repeatSignsAndLastSymbol()) {
 
                             toast.show();
 
@@ -318,7 +342,7 @@ public class MainActivity extends AppCompatActivity {
                             field.add('/');
                         break;
                     case R.id.multiplyButton:
-                        if (field.isEmpty() || repeatSigns()) {
+                        if (field.isEmpty() || repeatSignsAndLastSymbol()) {
 
                             toast.show();
 
@@ -326,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
                             field.add('*');
                         break;
                     case R.id.point:
-                        if (field.isEmpty() || repeatSigns() || findBrackets()) {
+                        if (field.isEmpty() || repeatSignsAndLastSymbol() || findBrackets()) {
 
                             toast.show();
 
@@ -334,7 +358,7 @@ public class MainActivity extends AppCompatActivity {
                             field.add('.');
                         break;
                     case R.id.openBracket:
-                        if (field.isEmpty() || repeatSigns()) {
+                        if (field.isEmpty() || repeatSignsAndLastSymbol()) {
                             field.add('(');
 
                         } else
@@ -342,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
 
                         break;
                     case R.id.closeBracket:
-                        if (field.isEmpty() || repeatSigns() || !field.contains('(') || field.get(field.size() - 1) == '(') {
+                        if (field.isEmpty() || repeatSignsAndLastSymbol() || !field.contains('(') || field.get(field.size() - 1) == '(') {
 
                             toast.show();
                         } else
@@ -357,7 +381,7 @@ public class MainActivity extends AppCompatActivity {
 
                         if (!bracketsCounter(str)) {
                             toast.show();
-                        } else if (repeatSigns()) {
+                        } else if (repeatSignsAndLastSymbol()) {
                             toast.show();
 
                         } else
@@ -375,10 +399,83 @@ public class MainActivity extends AppCompatActivity {
                 }
 
 
-                theFirstLine.setText(str);
+                firstLine.setText(str);
             }
 
         };
+        // listen long push
+        View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                //get id  which action was happened
+                int action = motionEvent.getAction();
+                //if we push the button
+                if (action == MotionEvent.ACTION_DOWN) {
+                    //show that button was happened
+                    view.setPressed(true);
+                    btnStartHandler.postDelayed(new Runnable() {
+                        //как только прошло 4 сек кодтаймер становится тру
+                        @Override
+                        public void run() {
+                            codeTimerStarts = true;
+
+                            Toast.makeText(getApplicationContext(),
+                                    "enter secret code",
+                                    Toast.LENGTH_SHORT).show();
+
+                            waitingHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(),
+                                            "no secret code",
+                                            Toast.LENGTH_SHORT).show();
+                                    codeTimerStarts = false;
+                                }
+                            }, 5000);
+                        }
+                    }, 4000);
+
+                    return false;
+                }
+                if (action == MotionEvent.ACTION_UP) {
+                    view.setPressed(false);
+                    //приоритет онтач выше чем у клик листенера
+                    //поэтому нужно это все дублировать
+                    result.setText(calculate());
+                    if (!codeTimerStarts) {
+                        btnStartHandler.removeCallbacksAndMessages(null);
+                    }
+                    return false;
+                }
+                return false;
+            }
+        };
+//обращает внимание на текст
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.toString().equals("123") && codeTimerStarts) {
+                    codeTimerStarts = false;
+                    //switch off the timer
+                    waitingHandler.removeCallbacksAndMessages(null);
+                    //change activity
+                    Intent intent = new Intent(MainActivity.this, HiddenActivity.class);
+                    startActivity(intent);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        };
+
+
         one.setOnClickListener(onClickListener);
         two.setOnClickListener(onClickListener);
         three.setOnClickListener(onClickListener);
@@ -399,6 +496,8 @@ public class MainActivity extends AppCompatActivity {
         closeBracket.setOnClickListener(onClickListener);
         cancel.setOnClickListener(onClickListener);
         equally.setOnClickListener(onClickListener);
+        equally.setOnTouchListener(onTouchListener);
+        firstLine.addTextChangedListener(textWatcher);
 
 
     }
