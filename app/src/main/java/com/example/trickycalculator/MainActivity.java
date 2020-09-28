@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean bracketsCounter(String a) {
+        if (a.equals("")) return false;
         int open = 0;
         int close = 0;
         for (int i = 0; i < a.length(); ++i) {
@@ -109,9 +110,30 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    private void usualCalc() {
+        if (field.size() < 1) {
+            Toast.makeText(getApplicationContext(),
+                    "clear field",
+                    Toast.LENGTH_SHORT).show();
+
+        } else if (!bracketsCounter(str)) {
+            Toast.makeText(getApplicationContext(),
+                    "error",
+                    Toast.LENGTH_SHORT).show();
+        } else if (repeatSignsAndLastSymbol()) {
+            Toast.makeText(getApplicationContext(),
+                    "error",
+                    Toast.LENGTH_SHORT).show();
+
+        } else
+            separation();
+        result.setText(calculate());
+    }
+
     //каждое число в отдельную ячейку
     private void separation() {
-        //clear the collection for escape hold previosly value
+        //clear the collection for escape hold previously value
         operations = new ArrayList<>();
 
 
@@ -379,14 +401,7 @@ public class MainActivity extends AppCompatActivity {
 
                     case R.id.doneMagickHoldButton:
 
-                        if (!bracketsCounter(str)) {
-                            toast.show();
-                        } else if (repeatSignsAndLastSymbol()) {
-                            toast.show();
-
-                        } else
-                            separation();
-                        result.setText(calculate());
+                        usualCalc();
 
                         break;
 
@@ -419,9 +434,11 @@ public class MainActivity extends AppCompatActivity {
                         public void run() {
                             codeTimerStarts = true;
 
+
                             Toast.makeText(getApplicationContext(),
                                     "enter secret code",
                                     Toast.LENGTH_SHORT).show();
+
 
                             waitingHandler.postDelayed(new Runnable() {
                                 @Override
@@ -439,9 +456,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (action == MotionEvent.ACTION_UP) {
                     view.setPressed(false);
-                    //приоритет онтач выше чем у клик листенера
-                    //поэтому нужно это все дублировать
-                    result.setText(calculate());
+                    //priority ontouch more than click listener
+                    //so, it is important dublicate onclick listener
+
+                    usualCalc();
+
+
                     if (!codeTimerStarts) {
                         btnStartHandler.removeCallbacksAndMessages(null);
                     }
@@ -459,6 +479,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+
                 if (charSequence.toString().equals("123") && codeTimerStarts) {
                     codeTimerStarts = false;
                     //switch off the timer
