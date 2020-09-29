@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 field.get(field.size() - 1) == '(');
     }
 
-    private boolean bracketsCounter(String a) {
+     boolean bracketsCounter(String a) {
         if (a.equals("")) return false;
         int open = 0;
         int close = 0;
