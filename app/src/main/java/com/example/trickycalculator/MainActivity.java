@@ -15,7 +15,6 @@ package com.example.trickycalculator;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -116,19 +115,24 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),
                     "clear field",
                     Toast.LENGTH_SHORT).show();
-
         } else if (!bracketsCounter(str)) {
             Toast.makeText(getApplicationContext(),
                     "error",
                     Toast.LENGTH_SHORT).show();
-        } else if (repeatSignsAndLastSymbol()) {
+        } else if (
+
+                repeatSignsAndLastSymbol()) {
             Toast.makeText(getApplicationContext(),
                     "error",
                     Toast.LENGTH_SHORT).show();
 
         } else
+
             separation();
-        result.setText(calculate());
+        result.setText(
+
+                calculate());
+
     }
 
     //каждое число в отдельную ячейку
@@ -433,7 +437,8 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             codeTimerStarts = true;
-
+                            firstLine.setText("");
+                            field.clear();
 
                             Toast.makeText(getApplicationContext(),
                                     "enter secret code",
@@ -463,6 +468,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                     if (!codeTimerStarts) {
+                        //switch off the timer
                         btnStartHandler.removeCallbacksAndMessages(null);
                     }
                     return false;
@@ -488,11 +494,13 @@ public class MainActivity extends AppCompatActivity {
                     //change activity
                     Intent intent = new Intent(MainActivity.this, HiddenActivity.class);
                     startActivity(intent);
+
                 }
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
+
 
             }
         };
